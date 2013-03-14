@@ -18,5 +18,5 @@ module SecondLevelCache
     def clear
       flushall
     end
-	end
+  end
 end

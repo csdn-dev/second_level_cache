@@ -12,5 +12,5 @@ module SecondLevelCache
     def clear
       flush_all
     end
-	end
+  end
 end
