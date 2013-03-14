@@ -5,7 +5,7 @@ module SecondLevelCache
     end
     
     def write(name, value, options = nil)
-      ttl = options[:options] if options && options[:expires_in]
+      ttl = options[:expires_in].to_i if options && options[:expires_in]
       set name, value, ttl
     end
     

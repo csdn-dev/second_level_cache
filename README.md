@@ -110,7 +110,7 @@ In production env, we recommend to use [Redis](https://github.com/redis/redis-rb
    config.cache_key_prefix = 'slc'
  end
 ```
-SecondLevelCache.configure.cache_store support drivers: redis, memcache, active_support
+SecondLevelCache.configure.cache_store support drivers: redis, dalli, active_support
 
 ## Tips: 
 
