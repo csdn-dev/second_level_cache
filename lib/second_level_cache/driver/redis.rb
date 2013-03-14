@@ -5,9 +5,11 @@ module SecondLevelCache
     end
     
     def write(name, value, options = nil)
-      set name, value
-      if options && options[:expires_in]
-        expire(name, options[:expires_in].to_i)
+      multi do
+        set name, value
+        if options && options[:expires_in]
+          expire(name, options[:expires_in].to_i)
+        end
       end
     end
     
