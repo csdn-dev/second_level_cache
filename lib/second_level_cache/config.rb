@@ -35,14 +35,15 @@ module SecondLevelCache
       else
         self.send operation, key
       end
-      log(operation, key, options) unless SecondLevelCache.cache_store.respond_to?(:logger)
+      cache_log(operation, key, options) unless SecondLevelCache.cache_store.respond_to?(:log, true)
       result
     rescue Exception => e
       SecondLevelCache.logger.warn e
       nil
     end
+
     private
-    def log(operation, key, options = nil)
+    def cache_log(operation, key, options = nil)
       logger = SecondLevelCache.logger
       return unless logger && logger.debug?
       logger.debug("Cache #{operation}: #{key}#{options.blank? ? "" : " (#{options.inspect})"}")
