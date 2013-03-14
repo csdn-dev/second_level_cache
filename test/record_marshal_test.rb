@@ -7,7 +7,7 @@ class RecordMarshalTest < Test::Unit::TestCase
   end
 
   def test_should_dump_active_record_object
-    dumped = RecordMarshal.dump(@user)
+    dumped = Marshal.load RecordMarshal.dump(@user)
     assert dumped.is_a?(Array)
     assert_equal "User", dumped[0]
     assert_equal @user.attributes, dumped[1]

@@ -102,10 +102,15 @@ Rails.logger.info "info"
 
 ## Configure
 
-In production env, we recommend to use [Dalli](https://github.com/mperham/dalli) as Rails cache store.
+In production env, we recommend to use [Redis](https://github.com/redis/redis-rb) as cache store.
 ```ruby
- config.cache_store = [:dalli_store, APP_CONFIG["memcached_host"], {:namespace => "ns", :compress => true}]
+ SecondLevelCache.configure do |config|
+   config.cache_store = :redis, Redis.new(:host => 'localhost', :port => 6379, :db => 3)
+   config.expires_in = 2.weeks
+   config.cache_key_prefix = 'slc'
+ end
 ```
+SecondLevelCache.configure.cache_store support drivers: redis, memcache, active_support
 
 ## Tips: 
 
@@ -115,11 +120,20 @@ you can only change the `cache_key_prefix`:
 ```ruby
 SecondLevelCache.configure.cache_key_prefix = "slc1"
 ```
-* When schema of your model changed, just change the `version` of the speical model, avoding clear all the cache.
+
+* When schema of your model changed, just change the `version` of the speical model, avoding clear all the cache
 
 ```ruby
 class User < ActiveRecord::Base
   acts_as_cached(:version => 2, :expires_in => 1.week)
+end
+```
+
+* When you want to use a separate expiration time for the specified model, can be set directly
+
+```ruby
+class User < ActiveRecord::Base
+  acts_as_cached(:expires_in => 1.week)
 end
 ```
 

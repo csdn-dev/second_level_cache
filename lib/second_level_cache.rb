@@ -1,5 +1,5 @@
 # -*- encoding : utf-8 -*-
-require 'active_support/all'
+require 'active_support/core_ext'
 require 'second_level_cache/config'
 require 'second_level_cache/record_marshal'
 
@@ -9,7 +9,7 @@ module SecondLevelCache
   end
 
   class << self
-    delegate :logger, :cache_store, :cache_key_prefix, :to => Config
+    delegate :logger, :cache_store, :cache_key_prefix, :expires_in, :to => Config
   end
 
   module Mixin
@@ -21,7 +21,7 @@ module SecondLevelCache
       def acts_as_cached(options = {})
         @second_level_cache_enabled = true
         @second_level_cache_options = options
-        @second_level_cache_options[:expires_in] ||= 1.week
+        @second_level_cache_options[:expires_in] ||= Config.expires_in || 1.week
         @second_level_cache_options[:version] ||= 0
       end
 
@@ -58,11 +58,11 @@ module SecondLevelCache
       end
 
       def read_second_level_cache(id)
-        RecordMarshal.load(SecondLevelCache.cache_store.read(second_level_cache_key(id))) if self.second_level_cache_enabled?
+        RecordMarshal.load(SecondLevelCache.cache_store.run(:read, second_level_cache_key(id))) if self.second_level_cache_enabled?
       end
 
       def expire_second_level_cache(id)
-        SecondLevelCache.cache_store.delete(second_level_cache_key(id)) if self.second_level_cache_enabled?
+        SecondLevelCache.cache_store.run(:delete, second_level_cache_key(id)) if self.second_level_cache_enabled?
       end
     end
 
@@ -71,12 +71,12 @@ module SecondLevelCache
     end
 
     def expire_second_level_cache
-      SecondLevelCache.cache_store.delete(second_level_cache_key) if self.class.second_level_cache_enabled?
+      SecondLevelCache.cache_store.run(:delete, second_level_cache_key) if self.class.second_level_cache_enabled?
     end
 
     def write_second_level_cache
       if self.class.second_level_cache_enabled?
-        SecondLevelCache.cache_store.write(second_level_cache_key, RecordMarshal.dump(self), :expires_in => self.class.second_level_cache_options[:expires_in])
+        SecondLevelCache.cache_store.run(:write, second_level_cache_key, RecordMarshal.dump(self), :expires_in => self.class.second_level_cache_options[:expires_in])
       end
     end
 

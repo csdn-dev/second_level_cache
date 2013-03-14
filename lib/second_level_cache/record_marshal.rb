@@ -10,7 +10,7 @@ module RecordMarshal
     # ]
 
     def dump(record)
-      [
+      Marshal.dump [
        record.class.name,
        record.instance_variable_get(:@attributes)
       ]
@@ -19,6 +19,7 @@ module RecordMarshal
     # load a cached record
     def load(serialized)
       return unless serialized
+      serialized = Marshal.load serialized
       record = serialized[0].constantize.allocate
       record.init_with('attributes' => serialized[1])
       record
