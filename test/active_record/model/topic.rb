@@ -7,7 +7,7 @@ ActiveRecord::Base.connection.create_table(:topics, :force => true) do |t|
 end
 
 class Topic < ActiveRecord::Base
-  acts_as_cached
+  acts_as_cached :expires_in => 3
 
   has_many :posts
 end
