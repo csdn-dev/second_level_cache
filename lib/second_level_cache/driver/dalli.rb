@@ -1,7 +1,7 @@
 module SecondLevelCache
   module Store
     def read(name)
-      get name
+      RecordMarshal.load get(name)
     rescue Exception => e
       logger.error("DalliError (#{e}): #{e.message}") if logger
       nil
@@ -9,7 +9,7 @@ module SecondLevelCache
 
     def write(name, value, options = nil)
       ttl = options[:expires_in].to_i if options && options[:expires_in]
-      set name, value, ttl
+      set name, RecordMarshal.dump(value), ttl
     rescue Exception => e
       logger.error("DalliError (#{e}): #{e.message}") if logger
       false

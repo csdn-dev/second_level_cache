@@ -1,7 +1,7 @@
 module SecondLevelCache
   module Store
     def read(name)
-      get name
+      RecordMarshal.load get(name)
     rescue Exception => e
       logger.error("RedisError : #{e.message}") if logger
       nil
@@ -9,7 +9,7 @@ module SecondLevelCache
 
     def write(name, value, options = nil)
       multi do
-        set name, value
+        set name, RecordMarshal.dump(value)
         if options && options[:expires_in]
           expire(name, options[:expires_in].to_i)
         end
