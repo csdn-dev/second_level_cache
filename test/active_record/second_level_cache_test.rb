@@ -21,7 +21,18 @@ class ActiveRecord::SecondLevelCacheTest < Test::Unit::TestCase
   def test_should_expire_cache
     @topic.write_second_level_cache
     assert_not_nil Topic.read_second_level_cache(@topic.id)
-    sleep 4
+    sleep 3
     assert_nil Topic.read_second_level_cache(@topic.id)
+  end
+
+  def test_should_fetch_cache
+    assert_nil SecondLevelCache.cache_store.read('fragment')
+    fragment = SecondLevelCache.cache_store.fetch('fragment', :expires_in => 2) do
+      @user.to_s
+    end
+    assert_equal fragment, @user.to_s
+    assert_equal SecondLevelCache.cache_store.read('fragment'), @user.to_s
+    sleep 3
+    assert_nil SecondLevelCache.cache_store.read('fragment')
   end
 end

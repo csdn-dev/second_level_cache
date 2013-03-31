@@ -43,8 +43,11 @@ module SecondLevelCache
     end
 
     private
+    def logger
+      SecondLevelCache.logger
+    end
+
     def cache_log(operation, key, options = nil)
-      logger = SecondLevelCache.logger
       return unless logger && logger.debug?
       logger.debug("Cache #{operation}: #{key}#{options.blank? ? "" : " (#{options.inspect})"}")
     end
