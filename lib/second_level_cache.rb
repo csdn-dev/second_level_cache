@@ -26,7 +26,7 @@ module SecondLevelCache
       end
 
       def second_level_cache_enabled?
-        !!@second_level_cache_enabled && Rails.application.config.cache_classes
+        !!@second_level_cache_enabled && ::Rails.application.config.cache_classes
       end
 
       def without_second_level_cache
