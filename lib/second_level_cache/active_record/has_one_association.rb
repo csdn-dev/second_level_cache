@@ -12,6 +12,7 @@ module SecondLevelCache
 
         def find_target_with_second_level_cache
           return find_target_without_second_level_cache unless association_class.second_level_cache_enabled?
+          return find_target_without_second_level_cache if self.class == ::ActiveRecord::Associations::HasOneThroughAssociation
           cache_record = association_class.fetch_by_uniq_key(owner[reflection.active_record_primary_key], reflection.foreign_key)
           return cache_record.tap{|record| set_inverse_instance(record)} if cache_record
 
